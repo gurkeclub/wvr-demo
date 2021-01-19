@@ -1,0 +1,106 @@
+(
+    view: (
+        bpm: 125,
+        width: 320,
+        height: 320,
+        fullscreen: false,
+        target_fps: 50,
+        dynamic: true,
+        vsync: true,
+        screenshot: false,
+        screenshot_path: "output/",
+        locked_speed: false,
+    ),
+    server: (
+        ip: "127.0.0.1",
+        port: 3000,
+        enable: false,
+    ),
+    inputs: {
+    },
+    filters: {
+        "scene": (
+            inputs: [
+                "iChannel0",
+                "iChannel1",
+                "iChannel2",
+                "iChannel3",
+            ],
+            vertex_shader: [
+                "#std/default.vs.glsl",
+            ],
+            fragment_shader: [
+                "#std/header.glsl",
+                "#std/noise.glsl",
+                "#std/misc.glsl",
+                "src/scene.fs.glsl",
+            ],
+            variables: {},
+        ),
+
+        "feedback": (
+            inputs: [
+                "iChannel0",
+                "iChannel1",
+            ],
+            vertex_shader: [
+                "#std/default.vs.glsl",
+            ],
+            fragment_shader: [
+                "#std/header.glsl",
+                "#std/noise.glsl",
+                "#std/misc.glsl",
+                "src/feedback.fs.glsl",
+            ],
+            variables: {},
+        ),
+
+        "target": (
+            inputs: [
+                "iChannel0",
+            ],  
+            vertex_shader: [
+                "#std/default.vs.glsl",
+            ],  
+            fragment_shader: [
+                "#std/header.glsl",
+                "#std/noise.glsl",
+                "#std/misc.glsl",
+                "src/target.fs.glsl",
+            ],  
+            variables: {},
+        ),
+    },
+    render_chain: [  
+        (
+            name: "Scene",
+            filter: "scene",
+            inputs: {
+            },
+            variables: {},
+            precision: U8,
+        ),
+        (
+            name: "Feedback",
+            filter: "feedback",
+            inputs: {
+                "iChannel0": Linear("Scene"),
+                "iChannel1": Linear("Feedback"),
+            },
+            variables: {},
+            precision: F32,
+        ),
+
+
+    ],
+
+    final_stage: (
+        name: "target",
+        filter: "target",
+        inputs: {
+            "iChannel0": Nearest("Feedback"),
+        },
+        variables: {},
+        precision: U8,
+    ),
+)
