@@ -21,10 +21,6 @@
     filters: {
         "scene": (
             inputs: [
-                "iChannel0",
-                "iChannel1",
-                "iChannel2",
-                "iChannel3",
             ],
             vertex_shader: [
                 "#std/default.vs.glsl",
